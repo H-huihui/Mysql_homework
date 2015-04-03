@@ -1,0 +1,93 @@
+1.	根据以上3个数据字典写出创建三张表的SQL语句；
+
+create table student(
+sid int primary key ont null,
+name varchar(10) not null,
+sex varchar(2) not null default 'f',
+age int,
+dept varchar(20) not null)type=innodb;
+
+create table course(
+cid int not null primary key,
+name varchar(10) not null)type=innodb;
+
+create tale sc(
+sid int not null,
+cid int not null,
+grade numeric(3,1),
+index(sid),
+index(cid),
+foreign key(sid) refereneces student(sid) on delete cascade,
+foreign key(cid) refereneces course(cid) on delete cascade)type=innodb;
+
+2.	对student表进行以下修改：增加一个“入学时间(come)”列,其数据类型为date；将该表中姓名(name)列的数据类型改为char(20)。
+
+alter table student add column come date;
+alter table student modify column name varchar(20);
+
+3.	将一个新学生记录(Sid:10;name:陈东;sex:男;age:18;come:2002-09-01;dept:信息)插入到student表中。
+
+insert into student values(10,'chendong','m',18,'mess','2002-09-01');
+
+4.	在学生表student中增加一个新的列“出生年份(year_of_birth)”，其数据类型为int, 然后根据每个学生的年龄将其填入正确的值。
+
+alter table student add column year_of_birth int;
+update student set year_of_birth=year(now())-age;
+
+5.	将学生表student中所有年龄大于27岁的女学生记录全部删除。
+
+delete from student where age>27 and sex='m';
+
+6.	写出对学生表student进行如下的查询工作的SQL语句：
+①查询student表中年龄在20到23之间的学生信息，用两种方法完成；
+
+select * from student where age>20 and age<23;
+select * from student where age between 20 and 23;
+
+②查询student表中年龄为18、20或者22岁学生信息，用两种方法完成；
+
+select * from student where age=18 or age=20 or age=23;
+select * from student where age in (18,20,23);
+
+③查询student表中姓名中包含一个“明”字的学生信息，查询结果按年龄降序排列；
+select * from student where name like '%明%' order by desc;
+
+④查询student表中所有年龄为空的学生信息；
+
+select * from student where age is null;
+
+⑤查询student表中学生总人数；
+
+select count(*) from student;
+
+⑥分别查询student表中所有学生的平均年龄、最大年龄和最小年龄，同时查询最大年龄和最小年龄的学生姓名；（分多步完成）
+
+select avg(age) as '平均年龄' from student;
+select avg(age) as '平均年龄' ,min(age) as '最小年龄' max(age) as '最大年龄' from student;
+select name,age from student where age=(select min(age) from student;
+select name,age from student where age=(select max(age) from student;
+
+*⑦求student表中所有学生的各个年龄段以及相应年龄段的人数；
+select concat(concat((floor(age/10))*10,'--->'),(floor(age/10))*10+9)as '年龄段',count(*) as '人数' from student group by floor(age/10);
+
+⑧查询至少有10名学生的系名称及该系中学生的确切人数。
+
+select dept,count(*) from student group by dept having count(*)>10;
+
+7.	对学生表student、课程表course和选课表sc作如下连接查询：
+①查询每个学生及其选修课程的情况；
+
+select a.name,b.name from student as a,course as b;
+
+②查询选修2号课程且成绩在90分以上的所有学生的学号和姓名；
+
+select a.sid,a.name,b.name,c.grade from student as a,course as b,sc as c
+where a.sid=c.sid and b.cid=c.cid and b.cid=2 and c.grade>90;
+
+③查询与“刘晨”在同一个系学习的学生；
+
+select name from student where dept=(select dept from student where name="刘晨";
+
+④查询所有选修了1号课程的学生姓名。
+
+select name from student where sid in (select sid in sc where cid=1);
