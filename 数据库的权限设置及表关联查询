@@ -91,3 +91,8 @@ select name from student where dept=(select dept from student where name="刘晨
 ④查询所有选修了1号课程的学生姓名。
 
 select name from student where sid in (select sid in sc where cid=1);
+
+用grant建立其他用户
+
+grant all on hzh.* to hzh@localhost identified by "123456";
+
